@@ -1,0 +1,113 @@
+1 создаем пакет в ros2_ws/src
+ros2 pkg create --build-type ament_python py_pubsub
+
+2 напишем узел издателя в ros2_ws/src/py_pubsub/py_pubsub
+wget https://raw.githubusercontent.com/ros2/examples/humble/rclpy/topics/minimal_publisher/examples_rclpy_minimal_publisher/publisher_member_function.py
+
+
+3 Теперь появится новый файл с именем « publisher_member_function.pyрядом с __init__.py.
+там мы кправляем узлами
+
+4 добавить зависимости
+Вернитесь на один уровень обратно в ros2_ws/src/py_pubsubкаталог, где для вас были созданы файлы setup.py, setup.cfgи .package.xml
+Откройте package.xmlс помощью текстового редактора.
+Как упоминалось в предыдущем уроке , обязательно заполните теги <description>и :<maintainer><license>
+
+После строк выше добавьте следующие зависимости, соответствующие операторам импорта вашего узла:
+<exec_depend>rclpy</exec_depend>
+<exec_depend>std_msgs</exec_depend>
+
+5 Добавьте точку входа
+Откройте setup.pyфайл. Опять же , сопоставьте поля maintainer, и с вашими maintainer_email:descriptionlicensepackage.xml
+
+Откройте setup.pyфайл. Опять же , сопоставьте поля maintainer, и с вашими maintainer_email:descriptionlicensepackage.xml
+
+maintainer='YourName',
+maintainer_email='you@email.com',
+description='Examples of minimal publisher/subscriber using rclpy',
+license='Apache License 2.0',
+Добавьте следующую строку в console_scriptsскобки поля entry_points:
+
+entry_points={
+        'console_scripts': [
+                'talker = py_pubsub.publisher_member_function:main',
+        ],
+},
+
+6 Проверьте setup.cfg
+Содержимое файла setup.cfg должно быть правильно заполнено автоматически, например:
+Это просто указание setuptools поместить ваши исполняемые файлы в lib, потому что они будут искать их там.ros2 run
+
+
+7 Напишите абонентский узел
+Вернитесь ros2_ws/src/py_pubsub/py_pubsubдля создания следующего узла. Введите следующий код в свой терминал:
+
+wget https://raw.githubusercontent.com/ros2/examples/humble/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber/subscriber_member_function.py
+Теперь в каталоге должны быть следующие файлы:
+__init__.py  publisher_member_function.py  subscriber_member_function.py
+
+8  Добавьте точку входа
+Снова откройте setup.pyи добавьте точку входа для узла подписчика ниже точки входа издателя. 
+Теперь поле entry_pointsдолжно выглядеть так:
+
+entry_points={
+        'console_scripts': [
+                'talker = py_pubsub.publisher_member_function:main',
+                'listener = py_pubsub.subscriber_member_function:main',
+        ],
+},
+
+
+4 сборка
+
+Вероятно, у вас уже установлены пакеты rclpyи std_msgsкак часть вашей системы ROS 2. 
+Хорошей практикой является запуск rosdepв корне вашего рабочего пространства ( ros2_ws), 
+чтобы проверить наличие отсутствующих зависимостей перед сборкой:
+
+rosdep install -i --from-path src --rosdistro humble -y
+
+colcon build --packages-select py_pubsub
+
+
+source install/setup.bash
+
+ros2 run py_pubsub talker
+ros2 run py_pubsub listener
+
+colcon build --packages-select text_to_cmd_vel
+source install/setup.bash
+ros2 run text_to_cmd_vel pub_move
+
+ros2 run turtlesim turtlesim_node
+
+ros2 run text_to_cmd_vel sub_move
+
+ros2 topic pub cmd_text std_msgs/String "data: 'turn_right'" --once
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
