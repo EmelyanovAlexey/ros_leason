@@ -1,0 +1,238 @@
+ros2 pkg create action_tutorials_interfaces
+cd action_tutorials_interfaces
+mkdir action
+
+в файл пишем
+int32 order
+---
+int32[] sequence
+---
+int32[] partial_sequence
+
+Сообщение запроса отправляется от клиента действия на сервер действий, инициируя новую цель.
+Сообщение о результате отправляется с сервера действий клиенту действий, когда цель достигнута.
+Сообщения обратной связи периодически отправляются с сервера действий клиенту действий с обновлениями о цели.
+
+Запрос цели — это orderпоследовательность Фибоначчи, которую мы хотим вычислить, результат — Final sequence, а обратная связь — partial_sequenceвычисленная на данный момент информация.
+
+Это достигается путем добавления следующих строк CMakeLists.txtперед ament_package()строкой в ​​файле action_tutorials_interfaces:
+find_package(rosidl_default_generators REQUIRED)
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "action/Fibonacci.action"
+)
+
+
+Мы также должны добавить необходимые зависимости в наш package.xml:
+<buildtool_depend>rosidl_default_generators</buildtool_depend>
+<depend>action_msgs</depend>
+<member_of_group>rosidl_interface_packages</member_of_group>
+
+
+Обратите внимание: нам нужно зависеть от того, action_msgs поскольку определения действий включают дополнительные метаданные (например, идентификаторы целей).
+Теперь мы сможем собрать пакет, содержащий Fibonacciопределение действия:
+
+
+
+Откройте новый файл в своем домашнем каталоге, назовем его fibonacci_action_server.pyи добавьте следующий код:
+
+import rclpy
+from rclpy.action import ActionServer
+from rclpy.node import Node
+
+from action_tutorials_interfaces.action import Fibonacci
+
+
+class FibonacciActionServer(Node):
+
+    def __init__(self):
+        super().__init__('fibonacci_action_server')
+        self._action_server = ActionServer(
+            self,
+            Fibonacci,
+            'fibonacci',
+            self.execute_callback)
+
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+        result = Fibonacci.Result()
+        return result
+
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    fibonacci_action_server = FibonacciActionServer()
+
+    rclpy.spin(fibonacci_action_server)
+
+
+if __name__ == '__main__':
+    main()
+Строка 8 определяет класс FibonacciActionServer, который является подклассом Node. Класс инициализируется вызовом Nodeконструктора, присваивающего нашему узлу имя fibonacci_action_server:
+
+
+
+Далее в 1 терминале python3 fibonacci_action_server.py
+Далее в 2 терминале ros2 action send_goal fibonacci action_tutorials_interfaces/action/Fibonacci "{order: 5}"
+
+
+
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+        goal_handle.succeed()
+        result = Fibonacci.Result()
+        return result
+Теперь, если вы перезапустите сервер действий и отправите еще одну цель, вы увидите, что цель завершена со статусом SUCCEEDED.
+
+Теперь давайте заставим выполнение нашей цели фактически вычисляться и возвращать запрошенную последовательность Фибоначчи:
+
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+
+        sequence = [0, 1]
+
+        for i in range(1, goal_handle.request.order):
+            sequence.append(sequence[i] + sequence[i-1])
+
+        goal_handle.succeed()
+
+        result = Fibonacci.Result()
+        result.sequence = sequence
+        return result
+
+
+
+1.2 Публикация отзывов ....................................................................
+
+import time
+
+import rclpy
+from rclpy.action import ActionServer
+from rclpy.node import Node
+
+from action_tutorials_interfaces.action import Fibonacci
+
+
+class FibonacciActionServer(Node):
+
+    def __init__(self):
+        super().__init__('fibonacci_action_server')
+        self._action_server = ActionServer(
+            self,
+            Fibonacci,
+            'fibonacci',
+            self.execute_callback)
+
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+
+        feedback_msg = Fibonacci.Feedback()
+        feedback_msg.partial_sequence = [0, 1]
+
+        for i in range(1, goal_handle.request.order):
+            feedback_msg.partial_sequence.append(
+                feedback_msg.partial_sequence[i] + feedback_msg.partial_sequence[i-1])
+            self.get_logger().info('Feedback: {0}'.format(feedback_msg.partial_sequence))
+            goal_handle.publish_feedback(feedback_msg)
+            time.sleep(1)
+
+        goal_handle.succeed()
+
+        result = Fibonacci.Result()
+        result.sequence = feedback_msg.partial_sequence
+        return result
+
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    fibonacci_action_server = FibonacciActionServer()
+
+    rclpy.spin(fibonacci_action_server)
+
+
+if __name__ == '__main__':
+    main()
+
+ros2 action send_goal --feedback fibonacci action_tutorials_interfaces/action/Fibonacci "{order: 5}"
+
+
+2 Написание клиента действий ...........................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
