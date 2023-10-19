@@ -1,0 +1,21 @@
+ros2 launch turtle_tf2_py turtle_tf2_demo.launch.py
+
+ros2 run turtlesim turtle_teleop_key
+
+1 сохраните дерево
+ros2 run tf2_tools view_frames > frames.pdf
+
+
+2 tf2_echoсообщает о преобразовании между любыми двумя кадрами, передаваемыми через ROS.
+ros2 run tf2_ros tf2_echo [source_frame] [target_frame]
+
+ros2 run tf2_ros tf2_echo turtle2 turtle1
+
+
+изучение кадров
+ros2 run rviz2 rviz2 -d $(ros2 pkg prefix --share turtle_tf2_py)/rviz/turtle_rviz.rviz
+
+
+
+
+
