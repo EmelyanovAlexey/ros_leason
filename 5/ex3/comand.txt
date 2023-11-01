@@ -1,0 +1,45 @@
+gz sim - запуск газебы
+
+cd 
+
+export GZ_VERSION=garden
+sudo apt install python3-vcstool python3-colcon-common-extensions git wget
+
+
+mkdir -p ~/template_ws/src
+cd ~/template_ws/src
+wget https://raw.githubusercontent.com/gazebosim/ros_gz_project_template/main/template_workspace.yaml
+vcs import < template_workspace.yaml
+
+cd ~/template_ws
+source /opt/ros/<ROS_DISTRO>/setup.bash
+sudo rosdep init
+rosdep update
+rosdep install --from-paths src --ignore-src -r -i -y --rosdistro <ROS_DISTRO>
+
+
+colcon build --cmake-args -DBUILD_TESTING=ON
+. ~/template_ws/install/setup.sh
+
+ros2 launch ros_gz_example_bringup diff_drive.launch.py
+
+////////////////////////////////////////////////////////
+cd task5/5.3
+
+cocon build
+export GZ_VERSION=garden
+. install/setup.bash
+
+model/robot/cmd_vel
+
+ros2 launch robot_bringup diff_drive.launch.py
+sudo apt install ros-humble-gazebo-ros-pkgs
+
+
+
+
+
+
+
+
+

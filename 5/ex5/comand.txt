@@ -1,0 +1,19 @@
+cd task5/5.3
+
+cocon build
+export GZ_VERSION=garden
+. install/setup.bash
+
+ros2 launch robot_bringup diff_drive.launch.py
+sudo apt install ros-humble-gazebo-ros-pkgs
+
+cd ~/task5/5.3/my_robot/robot_description/urdf
+xacro robot.urdf.xacro > robot.urdf.sdf
+
+2 терминал
+ros2 run unic_go go
+
+
+
+
+
