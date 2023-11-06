@@ -1,0 +1,9 @@
+cd task6/6.1
+
+. install/setup.bash
+
+ros2 launch robot_bringup diff_drive.launch.py
+
+teleop
+
+model/robot/cmd_vel

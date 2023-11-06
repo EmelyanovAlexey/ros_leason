@@ -1,0 +1,12 @@
+cd task6/6.5
+
+. install/setup.bash
+ros2 launch robot_bringup diff_drive.launch.py
+
+teleop
+model/robot/cmd_vel
+
+другой терминал
+ros2 run img_depth img_depth
+
+ros2 run move_depth move_depth

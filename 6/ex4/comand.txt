@@ -1,0 +1,10 @@
+cd task6/6.4
+
+. install/setup.bash
+ros2 launch robot_bringup diff_drive.launch.py
+
+teleop
+model/robot/cmd_vel
+
+другой терминал
+ros2 run move_lidar move

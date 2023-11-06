@@ -1,0 +1,17 @@
+cd task6/6.3
+
+. install/setup.bash
+
+ros2 launch robot_bringup diff_drive.launch.py
+
+teleop
+
+model/robot/cmd_vel
+
+------------------------
+Чтение данных из IMU
+Чтобы прочитать данные из IMU, запустите мир в одном терминале и нажмите кнопку воспроизведения:
+gz sim sensor_tutorial.sdf
+
+В другом терминале запустите:
+gz topic -e -t /imu
